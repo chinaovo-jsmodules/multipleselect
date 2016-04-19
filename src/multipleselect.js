@@ -1,5 +1,4 @@
 /*
- * multipleselect 0.1.0
  * Copyright (c) 2016 OvO
  * Date: 2016-04-06
  * 多选框
@@ -26,7 +25,7 @@
         /**
          * @name $.ovoMultipleSelect.version
          */
-        version: '0.1.0',
+        version: '0.1.2',
         author: "OvO",
         /**
          * holds all the default options used when creating new instances
@@ -38,9 +37,10 @@
              * @name $.ovoMultipleSelect.defaults.plugins
              */
             //参数定义
-            name:'',
+            name: '',
             fromDataUrl: '',
             fromData: [],//ex:[{name: '1111', value: '1111'}, {name: '222', value: '222'}]
+            toDataUrl: '',
             toData: []//ex:[{name: '1111', value: '1111'}, {name: '222', value: '222'}]
 
         },
@@ -68,9 +68,9 @@
     $.fn.ovoMultipleSelect = function (params) {
 
         params = $.extend(true, {}, $.ovoMultipleSelect.defaults, params);
-
+        var modal = $(this);
         var _loadFromData = function () {
-            var data={'str':$(this).val()||''}
+            var data = {'str': $(this).val() || ''}
             if (params.fromDataUrl.length > 0) {
                 $.ajax({
                     type: "get",
@@ -89,30 +89,55 @@
                         return [];
                     }
                 });
-            }else{
+            } else {
                 _fillFromData();
             }
         };
 
-        var _fillFromData= function (data) {
-            data = $.extend([],params.fromData, data);
-            var selectfrom=$('select.from',$('.ovomultiselect')).empty();
+        var _fillFromData = function (data) {
+            data = $.extend([], params.fromData, data);
+            var selectfrom = $('select.from', modal).empty();
             $(data).each(function () {
-                $('<option>').html(this.name||'').val(this.value||this.sid||'').dblclick(_selectOne).appendTo(selectfrom);
+                $('<option>').html(this.name || '').val(this.value || this.sid || '').dblclick(_selectOne).appendTo(selectfrom);
             });
             $("option:first", selectfrom).prop("selected", 'selected');
         }
 
-        var _fillToData= function (data) {
-            var selectto=$('select.to',$('.ovomultiselect')).empty();
+        var _loadToData = function () {
+            if (params.toDataUrl.length > 0) {
+                $.ajax({
+                    type: "get",
+                    url: params.toDataUrl,
+                    dataType: "json",
+                    headers: {
+                        "Accept": "application/json",
+                        "Content-Type": "application/json"
+                    },
+                    success: function (msg) {
+                        _fillToData(msg);
+                    },
+                    error: function (XMLHttpRequest, textStatus, errorThrown) {
+                        console.error(errorThrown);
+                        return [];
+                    }
+                });
+            } else {
+                _fillToData();
+            }
+        };
+
+
+        var _fillToData = function (data) {
+            data = $.extend([], params.toData, data);
+            var selectto = $('select.to', modal).empty();
             $(data).each(function () {
-                $('<option>').html(this.name||'').val(this.value||this.sid||'').dblclick(_removeOne).appendTo(selectto);
+                $('<option>').html(this.name || '').val(this.value || this.sid || '').dblclick(_removeOne).appendTo(selectto);
             });
         }
 
         var _selectOne = function () {
-            var selectfrom=$('select.from',$('.ovomultiselect'));
-            var selectto=$('select.to',$('.ovomultiselect'));
+            var selectfrom = $('select.from', modal);
+            var selectto = $('select.to', modal);
             if ($("option:selected", selectfrom).length < 1) {
                 $("option:first", selectfrom).prop("selected", 'selected');
             }
@@ -120,8 +145,8 @@
             $("option:selected", selectfrom).remove();
         }
         var _removeOne = function () {
-            var selectfrom=$('select.from',$('.ovomultiselect'));
-            var selectto=$('select.to',$('.ovomultiselect'));
+            var selectfrom = $('select.from', modal);
+            var selectto = $('select.to', modal);
             if ($("option:selected", selectto).length < 1) {
                 $("option:first", selectto).prop("selected", 'selected');
             }
@@ -129,43 +154,46 @@
             $("option:selected", selectto).remove();
         }
         var _selectAll = function () {
-            var selectfrom=$('select.from',$('.ovomultiselect'));
-            var selectto=$('select.to',$('.ovomultiselect'));
+            var selectfrom = $('select.from', modal);
+            var selectto = $('select.to', modal);
             $("option", selectfrom).clone().dblclick(_removeOne).appendTo(selectto);
             $("option", selectfrom).remove();
         }
         var _removeAll = function () {
-            var selectfrom=$('select.from',$('.ovomultiselect'));
-            var selectto=$('select.to',$('.ovomultiselect'));
+            var selectfrom = $('select.from', modal);
+            var selectto = $('select.to', modal);
             $("option", selectto).clone().dblclick(_selectOne).appendTo(selectfrom);
             $("option", selectto).remove();
         }
 
         this.each(function () {
-            var modal = $(this);
+            modal = $(this);
 
             var selectfrom = $('<select>').addClass('from').prop('multiple', true);
-            var selectto = $('<select>').addClass('to').prop('multiple', true).prop('name',params.name||'');
+            var selectto = $('<select>').addClass('to').prop('multiple', true).prop('name', params.name || '');
 
-            var inputSearchFrom=$('<input>').addClass('form-control').prop('type', 'text').prop('placeholder', '搜索').keyup(_loadFromData);
-            var btnSelect = $('<a>').addClass('btn default btn-block btn-sm').append('选择 ').append($('<i>').addClass('fa fa-angle-right')).click(_selectOne);
-            var btnRemove = $('<a>').addClass('btn default btn-block btn-sm').append($('<i>').addClass('fa fa-angle-left')).append(' 移除').click(_removeOne);
-            var btnSelectAll = $('<a>').addClass('btn default btn-block btn-sm').append('全择 ').append($('<i>').addClass('fa fa-angle-double-right')).click(_selectAll);
-            var btnRemoveAll = $('<a>').addClass('btn default btn-block btn-sm').append($('<i>').addClass('fa fa-angle-double-left')).append(' 全移除').click(_removeAll);
+            var inputSearchFrom = $('<input>').addClass('form-control').prop('type', 'text').prop('placeholder', '搜索').keyup(_loadFromData);
+            var btnSelect = $('<a>').addClass('btn btn-default btn-block btn-sm').append('选择 ').append($('<i>').addClass('fa fa-angle-right')).click(_selectOne);
+            var btnRemove = $('<a>').addClass('btn btn-default btn-block btn-sm').append($('<i>').addClass('fa fa-angle-left')).append(' 移除').click(_removeOne);
+            var btnSelectAll = $('<a>').addClass('btn btn-default btn-block btn-sm').append('全择 ').append($('<i>').addClass('fa fa-angle-double-right')).click(_selectAll);
+            var btnRemoveAll = $('<a>').addClass('btn btn-default btn-block btn-sm').append($('<i>').addClass('fa fa-angle-double-left')).append(' 全移除').click(_removeAll);
 
-            var left=$("<div>").addClass('selectpart selectleft');
-            if(params.fromDataUrl.length > 0){
+            var left = $("<div>").addClass('selectpart selectleft');
+            if (params.fromDataUrl.length > 0) {
                 left.append($('<div>').addClass('input-icon').append($('<i>').addClass('fa fa-search')).append(inputSearchFrom));
-            };
+            }
+            ;
             left.append($('<div>').addClass('select').append(selectfrom)).appendTo(modal);
             $("<div>").addClass('selectpart selectop').append($('<div>').addClass('clearfix').append(btnSelect).append(btnRemove).append(btnSelectAll).append(btnRemoveAll)).appendTo(modal);
             $("<div>").addClass('selectpart selectright').append($('<div>').addClass('select').append(selectto)).appendTo(modal);
 
             _loadFromData();
+            _loadToData();
 
-            if(params.fromDataUrl.length > 0){
-                selectto.height(selectfrom.height()+36);
-            };
+            if (params.fromDataUrl.length > 0) {
+                selectto.height(selectfrom.height() + 36);
+            }
+            ;
 
         });
     };

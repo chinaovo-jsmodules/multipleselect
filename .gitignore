@@ -9,3 +9,6 @@ out
 gen
 .git
 .gitignore
+npm-debug.log
+package.json
+node_modules
