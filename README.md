@@ -1,7 +1,7 @@
 # multipleselect
 
 左右选择的多选框
-
+```html
  <script>
  $().ready(function(){
 
@@ -10,3 +10,4 @@
 
  });
  </script>
+ ```
