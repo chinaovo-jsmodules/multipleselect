@@ -1,0 +1,22 @@
+{
+  "name": "multipleselect",
+  "version": "0.1.0",
+  "description": "左右型的多选框",
+  "main": "index.js",
+  "scripts": {
+    "test": "make test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/chinaovo/js_modules-multipleselect.git"
+  },
+  "keywords": [
+    "multiple","select"
+  ],
+  "author": "OvO海风OvO",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/chinaovo/js_modules-multipleselect/issues"
+  },
+  "homepage": "https://github.com/chinaovo/js_modules-multipleselect#readme"
+}

@@ -1,0 +1,12 @@
+.ovomultiselect{overflow: hidden;}
+.ovomultiselect select{border: 1px solid #e5e5e5;width: 100%;min-height:150px;min-width:100px;}
+.ovomultiselect select>option{padding:5px;margin-bottom:1px;}
+.ovomultiselect select>option:nth-child(even){background-color:#ffffff;}
+.ovomultiselect select>option:nth-child(odd){background-color: #f5f5f5;}
+.ovomultiselect select>option:hover{background-color:#eeeeee;}
+.ovomultiselect .selectpart{float:left;padding:5px;}
+.ovomultiselect .selectpart .input-icon{margin-bottom: 2px;}
+.ovomultiselect .selectleft{border: 1px solid #e5e5e5;}
+.ovomultiselect .selectop{}
+.ovomultiselect .selectright{border: 1px solid #e5e5e5;}
+/* .ovomultiselect .selectright select.to{min-height:186px;} */
